@@ -78,11 +78,20 @@ input[type=range],select,input[type=number]{width:100%}select,input[type=number]
 </main>
 </div>
 
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
+  }
+}
+</script>
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import * as THREE from 'three';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
 
 const $=id=>document.getElementById(id);
+window.addEventListener('error',e=>{const c=$('count');if(c)c.innerHTML='<b>Uygulama hatası:</b> '+(e.message||'JavaScript hatası');console.error(e.error||e.message)});
+window.addEventListener('unhandledrejection',e=>{const c=$('count');if(c)c.innerHTML='<b>Uygulama hatası:</b> '+(e.reason?.message||String(e.reason));console.error(e.reason)});
 if(!('indexedDB' in window)){
   document.getElementById('count').textContent='Bu tarayıcı ürün saklamayı desteklemiyor.';
 }
