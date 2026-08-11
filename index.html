@@ -83,8 +83,70 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.m
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
 
 const $=id=>document.getElementById(id);
+if(!('indexedDB' in window)){
+  document.getElementById('count').textContent='Bu tarayıcı ürün saklamayı desteklemiyor.';
+}
 let products=[], selectedWall=null, selectedFloor=null;
-const savedKey='gural-sanal-oda-products-v2';
+
+// Ürün görselleri localStorage yerine IndexedDB'de saklanır.
+// Böylece yüksek çözünürlüklü JPEG'lerde tarayıcı depolama sınırına takılmaz.
+const DB_NAME='gural-sanal-oda-db-v1';
+const DB_STORE='products';
+
+function openProductDB(){
+  return new Promise((resolve,reject)=>{
+    const req=indexedDB.open(DB_NAME,1);
+    req.onupgradeneeded=()=>{ if(!req.result.objectStoreNames.contains(DB_STORE)) req.result.createObjectStore(DB_STORE,{keyPath:'id'}); };
+    req.onsuccess=()=>resolve(req.result);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function dbGetAll(){
+  const db=await openProductDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readonly'), store=tx.objectStore(DB_STORE), req=store.getAll();
+    req.onsuccess=()=>resolve(req.result||[]);
+    req.onerror=()=>reject(req.error);
+  });
+}
+async function dbPut(item){
+  const db=await openProductDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite');
+    tx.objectStore(DB_STORE).put(item);
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  });
+}
+async function dbClear(){
+  const db=await openProductDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction(DB_STORE,'readwrite');
+    tx.objectStore(DB_STORE).clear();
+    tx.oncomplete=()=>resolve();
+    tx.onerror=()=>reject(tx.error);
+  });
+}
+function fileToProduct(file){
+  return {id:crypto.randomUUID(),name:file.name.replace(/\.[^.]+$/,''),blob:file};
+}
+function dataUrlToBlob(dataUrl){
+  const parts=dataUrl.split(',');
+  const mime=(parts[0].match(/:(.*?);/)||[])[1]||'image/jpeg';
+  const bin=atob(parts[1]);
+  const bytes=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  return new Blob([bytes],{type:mime});
+}
+async function loadProducts(){
+  try{
+    const saved=await dbGetAll();
+    products=saved.map(x=>({...x,url:URL.createObjectURL(x.blob)}));
+  }catch(e){
+    console.error('Ürün veritabanı okunamadı:',e);
+    products=[];
+  }
+}
 
 const scene=new THREE.Scene();
 scene.background=new THREE.Color(0xe7edf3);
@@ -168,15 +230,43 @@ function renderTiles(){
     $('tiles').appendChild(d);
   });
 }
-function saveProducts(){
-  const files=[...$('files').files]; if(!files.length)return;
-  Promise.all(files.map(f=>new Promise(res=>{const r=new FileReader();r.onload=()=>res({id:crypto.randomUUID(),name:f.name.replace(/\.[^.]+$/,''),url:r.result});r.readAsDataURL(f)}))).then(newOnes=>{
-    products=[...products,...newOnes];localStorage.setItem(savedKey,JSON.stringify(products));updateCount();renderTiles();
-  });
+async function saveProducts(){
+  const files=[...$('files').files];
+  if(!files.length){
+    $('count').textContent='Önce bir veya daha fazla seramik görseli seçin.';
+    return;
+  }
+  const btn=$('saveBtn');
+  btn.disabled=true;
+  btn.textContent='Kaydediliyor...';
+  try{
+    for(const file of files){
+      if(!file.type.startsWith('image/')) continue;
+      const item=fileToProduct(file);
+      await dbPut(item);
+      products.push({...item,url:URL.createObjectURL(item.blob)});
+    }
+    updateCount();
+    renderTiles();
+    $('count').innerHTML=`<b>${products.length}</b> ürün görseli kayıtlı. Bu tarayıcıda saklanıyor ✓`;
+  }catch(e){
+    console.error(e);
+    $('count').innerHTML='<b>Yükleme başarısız.</b> Tarayıcı depolamasına erişilemedi.';
+  }finally{
+    btn.disabled=false;
+    btn.textContent='Ürünleri Kaydet';
+  }
 }
 function updateCount(){$('count').innerHTML=`<b>${products.length}</b> ürün görseli kayıtlı. Bu tarayıcıda saklanıyor ✓`;}
 $('saveBtn').onclick=saveProducts;
-$('clearBtn').onclick=()=>{if(confirm('Kayıtlı ürün görselleri silinsin mi?')){products=[];selectedWall=selectedFloor=null;localStorage.removeItem(savedKey);updateCount();renderTiles();makeRoom();}};
+$('clearBtn').onclick=async()=>{
+  if(confirm('Kayıtlı ürün görselleri silinsin mi?')){
+    products.forEach(p=>{if(p.url)URL.revokeObjectURL(p.url)});
+    products=[];selectedWall=selectedFloor=null;
+    try{await dbClear()}catch(e){console.error(e)}
+    updateCount();renderTiles();makeRoom();
+  }
+};
 $('search').oninput=renderTiles;$('mode').onchange=renderTiles;
 ['rw','rd','rh'].forEach(id=>$(id).onchange=makeRoom);
 $('scale').oninput=applySelections;
@@ -185,8 +275,12 @@ $('reset').onclick=()=>{camera.position.set(7,5,8);controls.target.set(0,1.2,0);
 $('front').onclick=()=>{camera.position.set(0,2.1,9);controls.target.set(0,1.3,0);controls.update()};
 $('top').onclick=()=>{camera.position.set(0,9,.01);controls.target.set(0,0,0);controls.update()};
 
-try{products=JSON.parse(localStorage.getItem(savedKey)||'[]')}catch(e){products=[]}
-updateCount();makeRoom();renderTiles();
+(async()=>{
+  await loadProducts();
+  updateCount();
+  makeRoom();
+  renderTiles();
+})();
 function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
 </script>
 </body>
