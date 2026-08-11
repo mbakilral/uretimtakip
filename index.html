@@ -374,6 +374,79 @@ section.panel:has(table){overflow:hidden}
 .vrSaved{font-size:11px;color:#16824b;font-weight:800}.vrRange{display:flex;align-items:center;gap:8px}.vrRange input{flex:1}.vrRange span{font-size:11px;color:#666;min-width:35px;text-align:right}
 @media(max-width:900px){.virtualRoomGrid{grid-template-columns:1fr}.vrProducts{max-height:300px}.vrRoomWrap{min-height:520px}.vrScene{min-height:480px}}
 
+
+/* Sanal Oda 3D - embedded layout */
+.vr3d{
+  display:grid;
+  grid-template-columns:360px minmax(0,1fr);
+  gap:16px;
+  min-height:720px;
+  height:calc(100vh - 190px);
+  min-height:620px;
+}
+.vr3d-panel{
+  min-width:0;
+  background:#fafafa;
+  border:1px solid #e2e2e2;
+  border-radius:14px;
+  padding:16px;
+  overflow:auto;
+}
+.vr3d-panel h3{margin:18px 0 9px;font-size:14px;color:#222}
+.vr3d-panel h3:first-of-type{margin-top:18px}
+.vr3d-panel input[type=file]{width:100%;padding:10px;background:#fff;border:1px dashed #c9c9c9;border-radius:9px}
+.vr3d-panel input[type=text],.vr3d-panel input[type=number],.vr3d-panel input[type=range],.vr3d-panel select{width:100%;box-sizing:border-box}
+.vr3d-panel select,.vr3d-panel input[type=number]{padding:9px;border:1px solid #d4d4d4;border-radius:8px;background:#fff;font:inherit}
+.vr3d-panel input[type=range]{accent-color:#c9151e}
+.vr3d-brand{font-size:20px;font-weight:900;color:#222;margin-bottom:4px}
+.vr3d-sub{font-size:12px;color:#777;line-height:1.45;margin-bottom:14px}
+.vr3d-row{display:flex;gap:8px;flex-wrap:wrap}
+.vr3d-btn{border:1px solid #d2d2d2;background:#fff;color:#222;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:800;font-size:12px}
+.vr3d-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.vr3d-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.vr3d-green{background:#16824b!important;color:#fff!important;border-color:#16824b!important}
+.vr3d-info{margin-top:12px;background:#fff;border:1px solid #e6e6e6;border-radius:10px;padding:10px;font-size:11px;line-height:1.5;color:#66707b}
+.vr3d-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.vr3d-grid > label{min-width:0}
+.vr3d-grid > label input{margin-top:5px}
+.vr3d-stage{
+  position:relative;
+  min-width:0;
+  min-height:620px;
+  height:100%;
+  overflow:hidden;
+  border-radius:14px;
+  background:#e7edf3;
+  border:1px solid #dbe1e7;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),0 8px 25px rgba(0,0,0,.06);
+}
+#vr3d-scene{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  min-height:620px;
+}
+#vr3d-scene canvas{display:block;width:100%;height:100%;touch-action:none}
+.vr3d-topbar{position:absolute;left:16px;right:16px;top:16px;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:10px;pointer-events:none}
+.vr3d-topbar > *{pointer-events:auto}
+.vr3d-badge{background:rgba(255,255,255,.92);padding:10px 13px;border-radius:10px;font-size:12px;font-weight:900;box-shadow:0 5px 16px rgba(0,0,0,.09)}
+.vr3d-controls{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.vr3d-hint{position:absolute;left:16px;top:66px;z-index:5;background:rgba(255,255,255,.92);padding:8px 11px;border-radius:9px;font-size:11px;color:#606a75;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.vr3d-status{position:absolute;left:16px;bottom:16px;z-index:5;background:rgba(32,37,43,.86);color:#fff;padding:10px 13px;border-radius:10px;font-size:11px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+@media(max-width:1000px){
+  .vr3d{grid-template-columns:300px minmax(0,1fr);height:auto;min-height:760px}
+  .vr3d-stage{min-height:650px}
+}
+@media(max-width:800px){
+  .vr3d{grid-template-columns:1fr;height:auto}
+  .vr3d-panel{max-height:none}
+  .vr3d-stage{height:620px;min-height:620px}
+  #vr3d-scene{min-height:620px}
+  .vr3d-topbar{align-items:flex-start;flex-direction:column}
+  .vr3d-controls{justify-content:flex-start}
+}
+
 </style>
 
 
