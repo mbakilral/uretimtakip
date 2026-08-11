@@ -12,6 +12,14 @@
 .sectionline{display:flex;justify-content:space-between;align-items:center;gap:8px}.sectionline h3{margin-bottom:8px}.tiny{font-size:10px;color:#77818b}.checkrow{display:flex;gap:8px;align-items:center;font-size:11px;color:#5e6872;margin-top:8px}.checkrow input{width:auto}.stage{position:relative;min-width:0;background:linear-gradient(#dfe7ef,#f8fafc)}#scene{position:absolute;inset:0}.topbar{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;pointer-events:none}.topbar>*{pointer-events:auto}.badge{background:#fffffff0;padding:9px 12px;border-radius:10px;box-shadow:var(--shadow);font-size:12px;font-weight:800}.controls{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.controls .btn{box-shadow:var(--shadow)}.status{position:absolute;left:16px;bottom:16px;background:#20252ddd;color:#fff;padding:9px 13px;border-radius:10px;font-size:12px;max-width:75%}.hint{position:absolute;top:58px;left:16px;background:#ffffffdf;border-radius:9px;padding:8px 11px;font-size:11px;color:#606a75;box-shadow:var(--shadow)}.surfaceHint{position:absolute;right:16px;bottom:16px;background:#ffffffdf;border-radius:9px;padding:9px 11px;font-size:11px;color:#606a75;box-shadow:var(--shadow);max-width:330px}.legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.pill{font-size:10px;padding:5px 8px;border-radius:999px;background:#eef2f5;color:#5f6973}.pill.on{background:#fff0f1;color:var(--red);font-weight:800}.noProducts{font-size:11px;color:#7a838c;margin-top:9px}
 @media(max-width:900px){.app{grid-template-columns:310px 1fr}.panel{padding:12px}}@media(max-width:700px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-columns:1fr}.panel{height:auto;max-height:none}.stage{height:70vh;min-height:520px}.topbar{align-items:flex-start}.controls{max-width:55%}}
 </style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
 </head>
 <body>
 <div class="app">
@@ -57,8 +65,8 @@
 </div>
 
 <script type="module">
-import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
-import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 const $=id=>document.getElementById(id);
 let products=[],selectedWall=null,selectedFloor=null,selectedSurface='allWalls',surfaceMesh=null;
 const DB_NAME='gural-sanal-oda-db-v3',DB_STORE='products';
