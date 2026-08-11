@@ -2101,7 +2101,7 @@ $('vr3d-clearBtn').onclick=async()=>{
   }
 };
 $('vr3d-search').oninput=renderTiles;$('vr3d-mode').onchange=renderTiles;
-['rw','rd','rh'].forEach(id=>$(id).onchange=makeRoom);
+['vr3d-rw','vr3d-rd','vr3d-rh'].forEach(id=>$(id).onchange=makeRoom);
 $('vr3d-scale').oninput=applySelections;
 $('vr3d-light').oninput=e=>{key.intensity=+e.target.value;fill.intensity=+e.target.value*.45};
 $('vr3d-reset').onclick=()=>{camera.position.set(7,5,8);controls.target.set(0,1.2,0);controls.update()};
