@@ -1869,8 +1869,8 @@ function closeVirtualRoom(){
 
 <div id="customerModal" class="customerModal" role="dialog" aria-modal="true" aria-hidden="true" onclick="if(event.target===this)closeCustomerOrders()"><div class="customerModalBox"><div class="customerModalHead"><div><h2 id="customerModalTitle">Müşteri Bekleyen Siparişleri</h2><p id="customerModalSub">Bekleyen siparişler</p></div><button class="customerModalClose" type="button" onclick="closeCustomerOrders()" aria-label="Kapat">×</button></div><div id="customerModalBody" class="customerModalBody"></div></div></div>
 <script type="module">
-import * as THREE from 'https://esm.sh/three@0.180.0';
-import {OrbitControls} from 'https://esm.sh/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'https://esm.sh/three@0.180.0?bundle';
+import {OrbitControls} from 'https://esm.sh/three@0.180.0/examples/jsm/controls/OrbitControls.js?bundle';
 
 const $=id=>document.getElementById(id);
 window.addEventListener('error',e=>{const c=$('vr3d-count');if(c)c.innerHTML='<b>Uygulama hatası:</b> '+(e.message||'JavaScript hatası');console.error(e.error||e.message)});
@@ -1992,6 +1992,7 @@ renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure=1.05;
 $('vr3d-scene').appendChild(renderer.domElement);
+$('vr3d-count').textContent='3D motoru başlatılıyor...';
 
 const controls=new OrbitControls(camera,renderer.domElement);
 controls.target.set(0,1.2,0);controls.enableDamping=true;controls.minDistance=3;controls.maxDistance=18;
@@ -2049,8 +2050,16 @@ function updateStatus(){
   $('vr3d-status').textContent=`Duvar: ${selectedWall?.name||'—'} · Zemin: ${selectedFloor?.name||'—'}`;
 }
 function fit(){
-  const r=$('vr3d-scene').getBoundingClientRect();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height);
+  const el=$('vr3d-scene');
+  const r=el.getBoundingClientRect();
+  const w=Math.max(1,Math.floor(r.width));
+  const h=Math.max(1,Math.floor(r.height));
+  camera.aspect=w/h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w,h,false);
 }
+setTimeout(fit,50);
+setTimeout(fit,300);
 window.addEventListener('resize',fit);fit();
 
 function renderTiles(){
