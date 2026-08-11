@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Güral Seramik — 3D Sanal Oda</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#eef1f5;color:#17202a;overflow:hidden}
+.app{height:100vh;display:grid;grid-template-columns:340px 1fr}
+.panel{background:#fff;border-right:1px solid #dfe3e8;padding:18px;overflow:auto}
+.brand{font-size:21px;font-weight:800;margin-bottom:3px}.sub{font-size:12px;color:#77808b;margin-bottom:18px}
+h3{font-size:14px;margin:18px 0 9px}.row{display:flex;gap:8px}.btn{border:0;border-radius:9px;padding:10px 12px;font-weight:700;cursor:pointer;background:#e9edf2;color:#17202a}.btn.primary{background:#b5121b;color:#fff}.btn.green{background:#16884d;color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}
+input[type=file]{width:100%;padding:10px;border:1px dashed #b9c0c8;border-radius:10px;background:#fafafa}
+input[type=range],select,input[type=number]{width:100%}select,input[type=number]{padding:9px;border:1px solid #d4d9df;border-radius:8px;background:#fff}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tile{border:2px solid transparent;border-radius:10px;padding:6px;background:#f5f6f7;cursor:pointer}.tile.sel{border-color:#c5121c}.tile img{display:block;width:100%;height:84px;object-fit:cover;border-radius:7px}.tile b{font-size:11px;display:block;margin-top:5px;line-height:1.2}.tile small{font-size:10px;color:#7c858e}
+.info{font-size:11px;line-height:1.45;color:#66707b;background:#f7f8fa;border-radius:9px;padding:10px;margin-top:12px}
+.stage{position:relative;min-width:0;background:linear-gradient(#dfe7ef,#f8fafc)}#scene{position:absolute;inset:0}.topbar{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.topbar>*{pointer-events:auto}
+.badge{background:rgba(255,255,255,.92);padding:9px 12px;border-radius:10px;box-shadow:0 4px 18px #0001;font-size:12px;font-weight:700}
+.controls{display:flex;gap:7px}.controls .btn{box-shadow:0 4px 18px #0001}
+.status{position:absolute;left:18px;bottom:18px;background:#20252bcc;color:#fff;padding:9px 13px;border-radius:10px;font-size:12px}
+.hint{position:absolute;top:66px;left:18px;background:#ffffffdd;border-radius:9px;padding:8px 11px;font-size:11px;color:#606a75;box-shadow:0 4px 18px #0001}
+@media(max-width:850px){.app{grid-template-columns:290px 1fr}.panel{padding:12px}.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="panel">
+  <div class="brand">🏠 Sanal Oda Tasarımı</div>
+  <div class="sub">Güral Seramik ürünlerini gerçek zamanlı 3D odada deneyin.</div>
+
+  <h3>1. Seramik Görselleri</h3>
+  <input id="files" type="file" accept="image/*" multiple>
+  <div class="row" style="margin-top:8px">
+    <button class="btn green" id="saveBtn">Ürünleri Kaydet</button>
+    <button class="btn" id="clearBtn">Temizle</button>
+  </div>
+  <div id="count" class="info">Henüz ürün yüklenmedi.</div>
+
+  <h3>2. Uygulama Alanı</h3>
+  <select id="mode">
+    <option value="wall">Duvar</option>
+    <option value="floor">Zemin</option>
+  </select>
+
+  <h3>Ürün Ara</h3>
+  <input id="search" placeholder="Ürün adı yazın...">
+  <div id="tiles" class="grid" style="margin-top:9px"></div>
+
+  <h3>Oda Ölçüleri</h3>
+  <div class="grid">
+    <label style="font-size:11px">Genişlik<input id="rw" type="number" value="5" min="2" max="15" step=".5"></label>
+    <label style="font-size:11px">Derinlik<input id="rd" type="number" value="4" min="2" max="15" step=".5"></label>
+    <label style="font-size:11px">Yükseklik<input id="rh" type="number" value="2.8" min="2" max="5" step=".1"></label>
+    <label style="font-size:11px">Döşeme ölçeği<input id="scale" type="range" min=".15" max="2" step=".05" value=".65"></label>
+  </div>
+
+  <h3>Işık</h3>
+  <input id="light" type="range" min=".4" max="2.2" step=".05" value="1.2">
+
+  <div class="info">
+    <b>Kullanım:</b> Ürün görsellerini seçin → <b>Ürünleri Kaydet</b> → Duvar/Zemin seçin → ürüne tıklayın.
+    3D sahnede sol tuşla döndürün, tekerlekle yakınlaştırın, sağ tuşla taşıyın.
+  </div>
+</aside>
+
+<main class="stage">
+  <div id="scene"></div>
+  <div class="topbar">
+    <div class="badge">GÜRAl SERAMİK · 3D SANAL ODA</div>
+    <div class="controls">
+      <button class="btn" id="front">Ön Görünüm</button>
+      <button class="btn" id="top">Üst Görünüm</button>
+      <button class="btn" id="reset">Kamerayı Sıfırla</button>
+    </div>
+  </div>
+  <div class="hint">🖱 Sol: döndür · Tekerlek: yakınlaştır · Sağ: taşı</div>
+  <div id="status" class="status">Duvar: — · Zemin: —</div>
+</main>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+
+const $=id=>document.getElementById(id);
+let products=[], selectedWall=null, selectedFloor=null;
+const savedKey='gural-sanal-oda-products-v2';
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0xe7edf3);
+const camera=new THREE.PerspectiveCamera(45,1,.1,100);
+camera.position.set(7,5,8);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+$('scene').appendChild(renderer.domElement);
+
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,1.2,0);controls.enableDamping=true;controls.minDistance=3;controls.maxDistance=18;
+controls.maxPolarAngle=Math.PI*.49;
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x8b96a3,1.1));
+const key=new THREE.DirectionalLight(0xffffff,1.5);key.position.set(4,7,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);scene.add(key);
+const fill=new THREE.PointLight(0xfff5e8,.7,15);fill.position.set(-2,3,2);scene.add(fill);
+
+const room=new THREE.Group();scene.add(room);
+let floorMesh, backWall, leftWall, rightWall, ceiling;
+const loader=new THREE.TextureLoader();
+
+function matFor(tex,scale=1){
+  if(!tex)return new THREE.MeshStandardMaterial({color:0xdfe3e7,roughness:.9});
+  tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
+  tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
+  tex.repeat.set(Math.max(.2,scale),Math.max(.2,scale));
+  return new THREE.MeshStandardMaterial({map:tex,roughness:.65,metalness:0});
+}
+function makeRoom(){
+  while(room.children.length)room.remove(room.children[0]);
+  const w=+$('rw').value,d=+$('rd').value,h=+$('rh').value;
+  const wall=new THREE.MeshStandardMaterial({color:0xf0f0ee,roughness:1});
+  const floorMat=new THREE.MeshStandardMaterial({color:0xd7d0c8,roughness:.9});
+  floorMesh=new THREE.Mesh(new THREE.PlaneGeometry(w,d),floorMat);floorMesh.rotation.x=-Math.PI/2;floorMesh.receiveShadow=true;room.add(floorMesh);
+  backWall=new THREE.Mesh(new THREE.PlaneGeometry(w,h),wall);backWall.position.set(0,h/2,-d/2);backWall.receiveShadow=true;room.add(backWall);
+  leftWall=new THREE.Mesh(new THREE.PlaneGeometry(d,h),wall);leftWall.rotation.y=Math.PI/2;leftWall.position.set(-w/2,h/2,0);leftWall.receiveShadow=true;room.add(leftWall);
+  rightWall=new THREE.Mesh(new THREE.PlaneGeometry(d,h),wall);rightWall.rotation.y=-Math.PI/2;rightWall.position.set(w/2,h/2,0);rightWall.receiveShadow=true;room.add(rightWall);
+  ceiling=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshStandardMaterial({color:0xfafafa,roughness:1}));
+  ceiling.rotation.x=Math.PI/2;ceiling.position.y=h;room.add(ceiling);
+  // Baseboards
+  const baseMat=new THREE.MeshStandardMaterial({color:0xeeeeee,roughness:.8});
+  for(const [x,z,rot,len] of [[0,-d/2,.0,w],[-w/2,0,Math.PI/2,d],[w/2,0,Math.PI/2,d]]){
+    const b=new THREE.Mesh(new THREE.BoxGeometry(len,.08,.06),baseMat);b.position.set(x,.04,z);if(rot)b.rotation.y=rot;room.add(b);
+  }
+  applySelections();
+}
+function applyTexture(mesh,data,scale){
+  if(!mesh||!data)return;
+  loader.load(data.url,tex=>{mesh.material=matFor(tex,scale);mesh.material.needsUpdate=true;});
+}
+function applySelections(){
+  const s=+$('scale').value;
+  if(selectedFloor)applyTexture(floorMesh,selectedFloor,s);
+  if(selectedWall){
+    applyTexture(backWall,selectedWall,s);
+    applyTexture(leftWall,selectedWall,s);
+    applyTexture(rightWall,selectedWall,s);
+  }
+  updateStatus();
+}
+function updateStatus(){
+  $('status').textContent=`Duvar: ${selectedWall?.name||'—'} · Zemin: ${selectedFloor?.name||'—'}`;
+}
+function fit(){
+  const r=$('scene').getBoundingClientRect();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height);
+}
+window.addEventListener('resize',fit);fit();
+
+function renderTiles(){
+  const q=$('search').value.toLocaleLowerCase('tr-TR').trim(), mode=$('mode').value;
+  $('tiles').innerHTML='';
+  products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(q)).forEach(p=>{
+    const d=document.createElement('div');d.className='tile '+((mode==='wall'?selectedWall:selectedFloor)?.id===p.id?'sel':'');
+    d.innerHTML=`<img src="${p.url}"><b>${p.name}</b><small>${mode==='wall'?'Duvara uygula':'Zemine uygula'}</small>`;
+    d.onclick=()=>{if(mode==='wall')selectedWall=p;else selectedFloor=p;applySelections();renderTiles()};
+    $('tiles').appendChild(d);
+  });
+}
+function saveProducts(){
+  const files=[...$('files').files]; if(!files.length)return;
+  Promise.all(files.map(f=>new Promise(res=>{const r=new FileReader();r.onload=()=>res({id:crypto.randomUUID(),name:f.name.replace(/\.[^.]+$/,''),url:r.result});r.readAsDataURL(f)}))).then(newOnes=>{
+    products=[...products,...newOnes];localStorage.setItem(savedKey,JSON.stringify(products));updateCount();renderTiles();
+  });
+}
+function updateCount(){$('count').innerHTML=`<b>${products.length}</b> ürün görseli kayıtlı. Bu tarayıcıda saklanıyor ✓`;}
+$('saveBtn').onclick=saveProducts;
+$('clearBtn').onclick=()=>{if(confirm('Kayıtlı ürün görselleri silinsin mi?')){products=[];selectedWall=selectedFloor=null;localStorage.removeItem(savedKey);updateCount();renderTiles();makeRoom();}};
+$('search').oninput=renderTiles;$('mode').onchange=renderTiles;
+['rw','rd','rh'].forEach(id=>$(id).onchange=makeRoom);
+$('scale').oninput=applySelections;
+$('light').oninput=e=>{key.intensity=+e.target.value;fill.intensity=+e.target.value*.45};
+$('reset').onclick=()=>{camera.position.set(7,5,8);controls.target.set(0,1.2,0);controls.update()};
+$('front').onclick=()=>{camera.position.set(0,2.1,9);controls.target.set(0,1.3,0);controls.update()};
+$('top').onclick=()=>{camera.position.set(0,9,.01);controls.target.set(0,0,0);controls.update()};
+
+try{products=JSON.parse(localStorage.getItem(savedKey)||'[]')}catch(e){products=[]}
+updateCount();makeRoom();renderTiles();
+function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
+</script>
+</body>
+</html>
