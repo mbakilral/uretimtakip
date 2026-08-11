@@ -5,292 +5,104 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Güral Seramik — 3D Sanal Oda</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:#eef1f5;color:#17202a;overflow:hidden}
-.app{height:100vh;display:grid;grid-template-columns:340px 1fr}
-.panel{background:#fff;border-right:1px solid #dfe3e8;padding:18px;overflow:auto}
-.brand{font-size:21px;font-weight:800;margin-bottom:3px}.sub{font-size:12px;color:#77808b;margin-bottom:18px}
-h3{font-size:14px;margin:18px 0 9px}.row{display:flex;gap:8px}.btn{border:0;border-radius:9px;padding:10px 12px;font-weight:700;cursor:pointer;background:#e9edf2;color:#17202a}.btn.primary{background:#b5121b;color:#fff}.btn.green{background:#16884d;color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}
-input[type=file]{width:100%;padding:10px;border:1px dashed #b9c0c8;border-radius:10px;background:#fafafa}
-input[type=range],select,input[type=number]{width:100%}select,input[type=number]{padding:9px;border:1px solid #d4d9df;border-radius:8px;background:#fff}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tile{border:2px solid transparent;border-radius:10px;padding:6px;background:#f5f6f7;cursor:pointer}.tile.sel{border-color:#c5121c}.tile img{display:block;width:100%;height:84px;object-fit:cover;border-radius:7px}.tile b{font-size:11px;display:block;margin-top:5px;line-height:1.2}.tile small{font-size:10px;color:#7c858e}
-.info{font-size:11px;line-height:1.45;color:#66707b;background:#f7f8fa;border-radius:9px;padding:10px;margin-top:12px}
-.stage{position:relative;min-width:0;background:linear-gradient(#dfe7ef,#f8fafc)}#scene{position:absolute;inset:0}.topbar{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}.topbar>*{pointer-events:auto}
-.badge{background:rgba(255,255,255,.92);padding:9px 12px;border-radius:10px;box-shadow:0 4px 18px #0001;font-size:12px;font-weight:700}
-.controls{display:flex;gap:7px}.controls .btn{box-shadow:0 4px 18px #0001}
-.status{position:absolute;left:18px;bottom:18px;background:#20252bcc;color:#fff;padding:9px 13px;border-radius:10px;font-size:12px}
-.hint{position:absolute;top:66px;left:18px;background:#ffffffdd;border-radius:9px;padding:8px 11px;font-size:11px;color:#606a75;box-shadow:0 4px 18px #0001}
-@media(max-width:850px){.app{grid-template-columns:290px 1fr}.panel{padding:12px}.grid{grid-template-columns:1fr 1fr}}
+:root{--red:#b5121b;--green:#16884d;--ink:#17202a;--muted:#69737d;--line:#dfe4e9;--panel:#fff;--bg:#edf2f6;--soft:#f6f8fa;--shadow:0 8px 28px #00000012}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden}
+.app{height:100vh;display:grid;grid-template-columns:365px 1fr}.panel{background:var(--panel);border-right:1px solid var(--line);padding:16px;overflow:auto}.brand{font-size:22px;font-weight:850}.sub{font-size:12px;color:var(--muted);margin:4px 0 16px;line-height:1.4}h3{font-size:14px;margin:17px 0 8px}.row{display:flex;gap:8px}.btn{border:0;border-radius:9px;padding:10px 12px;font-weight:750;cursor:pointer;background:#e9edf2;color:var(--ink)}.btn.primary{background:var(--red);color:#fff}.btn.green{background:var(--green);color:#fff}.btn.active{outline:2px solid #c9d1d9;outline-offset:1px}.btn:disabled{opacity:.45;cursor:not-allowed}input[type=file]{width:100%;padding:10px;border:1px dashed #b9c0c8;border-radius:10px;background:#fafafa}input[type=range],select,input[type=number],input[type=text]{width:100%}select,input[type=number],input[type=text]{padding:9px;border:1px solid #d4d9df;border-radius:8px;background:#fff;outline:none}input:focus,select:focus{border-color:#9da9b5;box-shadow:0 0 0 3px #dfe6ed}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.info{font-size:11px;line-height:1.45;color:#66707b;background:var(--soft);border-radius:9px;padding:10px;margin-top:10px}.modebar{display:grid;grid-template-columns:1fr 1fr;gap:7px}.modebar .btn{border:1px solid var(--line)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.tile{border:2px solid transparent;border-radius:10px;padding:6px;background:#f5f6f7;cursor:pointer;min-width:0}.tile:hover{background:#eef1f4}.tile.sel{border-color:var(--red)}.tile img{display:block;width:100%;height:82px;object-fit:cover;border-radius:7px;background:#ddd}.tile b{font-size:11px;display:block;margin-top:5px;line-height:1.2;white-space:normal}.tile small{font-size:10px;color:#7c858e}.empty{grid-column:1/-1;text-align:center;color:#7a838c;padding:16px 8px;background:var(--soft);border-radius:9px;font-size:12px}
+.sectionline{display:flex;justify-content:space-between;align-items:center;gap:8px}.sectionline h3{margin-bottom:8px}.tiny{font-size:10px;color:#77818b}.checkrow{display:flex;gap:8px;align-items:center;font-size:11px;color:#5e6872;margin-top:8px}.checkrow input{width:auto}.stage{position:relative;min-width:0;background:linear-gradient(#dfe7ef,#f8fafc)}#scene{position:absolute;inset:0}.topbar{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;pointer-events:none}.topbar>*{pointer-events:auto}.badge{background:#fffffff0;padding:9px 12px;border-radius:10px;box-shadow:var(--shadow);font-size:12px;font-weight:800}.controls{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}.controls .btn{box-shadow:var(--shadow)}.status{position:absolute;left:16px;bottom:16px;background:#20252ddd;color:#fff;padding:9px 13px;border-radius:10px;font-size:12px;max-width:75%}.hint{position:absolute;top:58px;left:16px;background:#ffffffdf;border-radius:9px;padding:8px 11px;font-size:11px;color:#606a75;box-shadow:var(--shadow)}.surfaceHint{position:absolute;right:16px;bottom:16px;background:#ffffffdf;border-radius:9px;padding:9px 11px;font-size:11px;color:#606a75;box-shadow:var(--shadow);max-width:330px}.legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.pill{font-size:10px;padding:5px 8px;border-radius:999px;background:#eef2f5;color:#5f6973}.pill.on{background:#fff0f1;color:var(--red);font-weight:800}.noProducts{font-size:11px;color:#7a838c;margin-top:9px}
+@media(max-width:900px){.app{grid-template-columns:310px 1fr}.panel{padding:12px}}@media(max-width:700px){body{overflow:auto}.app{height:auto;min-height:100vh;grid-template-columns:1fr}.panel{height:auto;max-height:none}.stage{height:70vh;min-height:520px}.topbar{align-items:flex-start}.controls{max-width:55%}}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="panel">
   <div class="brand">🏠 Sanal Oda Tasarımı</div>
-  <div class="sub">Güral Seramik ürünlerini gerçek zamanlı 3D odada deneyin.</div>
+  <div class="sub">Güral Seramik ürünlerini gerçek zamanlı 3D odada deneyin. Ürünler bu tarayıcıda saklanır.</div>
 
   <h3>1. Seramik Görselleri</h3>
   <input id="files" type="file" accept="image/*" multiple>
-  <div class="row" style="margin-top:8px">
-    <button class="btn green" id="saveBtn">Ürünleri Kaydet</button>
-    <button class="btn" id="clearBtn">Temizle</button>
-  </div>
+  <div class="row" style="margin-top:8px"><button class="btn green" id="saveBtn">Ürünleri Kaydet</button><button class="btn" id="clearBtn">Temizle</button></div>
   <div id="count" class="info">Henüz ürün yüklenmedi.</div>
 
   <h3>2. Uygulama Alanı</h3>
-  <select id="mode">
-    <option value="wall">Duvar</option>
-    <option value="floor">Zemin</option>
-  </select>
+  <div class="modebar"><button class="btn active" id="wallMode">Duvar</button><button class="btn" id="floorMode">Zemin</button></div>
+  <div class="legend"><span class="pill on" id="modePill">Duvar modu</span><span class="pill" id="surfacePill">Yüzey seçilmedi</span></div>
 
-  <h3>Ürün Ara</h3>
-  <input id="search" placeholder="Ürün adı yazın...">
-  <div id="tiles" class="grid" style="margin-top:9px"></div>
+  <div class="sectionline"><h3>Ürün Ara</h3><span class="tiny" id="resultCount"></span></div>
+  <input id="search" type="text" placeholder="Ürün adı yazın...">
+  <div id="tiles" class="tiles"></div>
 
-  <h3>Oda Ölçüleri</h3>
+  <h3>Oda Ölçüleri (m)</h3>
   <div class="grid">
     <label style="font-size:11px">Genişlik<input id="rw" type="number" value="5" min="2" max="15" step=".5"></label>
     <label style="font-size:11px">Derinlik<input id="rd" type="number" value="4" min="2" max="15" step=".5"></label>
     <label style="font-size:11px">Yükseklik<input id="rh" type="number" value="2.8" min="2" max="5" step=".1"></label>
     <label style="font-size:11px">Döşeme ölçeği<input id="scale" type="range" min=".15" max="2" step=".05" value=".65"></label>
   </div>
+  <label class="checkrow"><input id="showGrid" type="checkbox" checked> Derz/ızgara çizgilerini göster</label>
 
-  <h3>Işık</h3>
-  <input id="light" type="range" min=".4" max="2.2" step=".05" value="1.2">
+  <h3>Işık</h3><input id="light" type="range" min=".4" max="2.2" step=".05" value="1.2">
 
-  <div class="info">
-    <b>Kullanım:</b> Ürün görsellerini seçin → <b>Ürünleri Kaydet</b> → Duvar/Zemin seçin → ürüne tıklayın.
-    3D sahnede sol tuşla döndürün, tekerlekle yakınlaştırın, sağ tuşla taşıyın.
-  </div>
+  <div class="info"><b>Kullanım:</b> Ürünleri seçin → <b>Duvar/Zemin</b> modunu seçin → ürün kartına tıklayın. Duvar modunda ayrıca 3D odadaki <b>arka/sol/sağ duvara tıklayarak tek yüzey</b> seçebilirsiniz.</div>
 </aside>
 
 <main class="stage">
   <div id="scene"></div>
-  <div class="topbar">
-    <div class="badge">GÜRAl SERAMİK · 3D SANAL ODA</div>
-    <div class="controls">
-      <button class="btn" id="front">Ön Görünüm</button>
-      <button class="btn" id="top">Üst Görünüm</button>
-      <button class="btn" id="reset">Kamerayı Sıfırla</button>
-    </div>
-  </div>
+  <div class="topbar"><div class="badge">GÜRAl SERAMİK · 3D SANAL ODA</div><div class="controls"><button class="btn" id="front">Ön Görünüm</button><button class="btn" id="top">Üst Görünüm</button><button class="btn" id="reset">Kamerayı Sıfırla</button></div></div>
   <div class="hint">🖱 Sol: döndür · Tekerlek: yakınlaştır · Sağ: taşı</div>
+  <div id="surfaceHint" class="surfaceHint">Uygulama için önce bir ürün seçin.</div>
   <div id="status" class="status">Duvar: — · Zemin: —</div>
 </main>
 </div>
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"
-  }
-}
-</script>
 <script type="module">
-import * as THREE from 'three';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
-
 const $=id=>document.getElementById(id);
-window.addEventListener('error',e=>{const c=$('count');if(c)c.innerHTML='<b>Uygulama hatası:</b> '+(e.message||'JavaScript hatası');console.error(e.error||e.message)});
-window.addEventListener('unhandledrejection',e=>{const c=$('count');if(c)c.innerHTML='<b>Uygulama hatası:</b> '+(e.reason?.message||String(e.reason));console.error(e.reason)});
-if(!('indexedDB' in window)){
-  document.getElementById('count').textContent='Bu tarayıcı ürün saklamayı desteklemiyor.';
+let products=[],selectedWall=null,selectedFloor=null,selectedSurface='allWalls',surfaceMesh=null;
+const DB_NAME='gural-sanal-oda-db-v1',DB_STORE='products';
+function openProductDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open(DB_NAME,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(DB_STORE))req.result.createObjectStore(DB_STORE,{keyPath:'id'})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function dbGetAll(){const db=await openProductDB();return new Promise((resolve,reject)=>{const tx=db.transaction(DB_STORE,'readonly'),req=tx.objectStore(DB_STORE).getAll();req.onsuccess=()=>resolve(req.result||[]);req.onerror=()=>reject(req.error)})}
+async function dbPut(item){const db=await openProductDB();return new Promise((resolve,reject)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).put(item);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+async function dbClear(){const db=await openProductDB();return new Promise((resolve,reject)=>{const tx=db.transaction(DB_STORE,'readwrite');tx.objectStore(DB_STORE).clear();tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)})}
+function fileToProduct(file){return{id:crypto.randomUUID(),name:file.name.replace(/\.[^.]+$/,''),blob:file}}
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xe7edf3);
+const camera=new THREE.PerspectiveCamera(45,1,.1,100);camera.position.set(7,5,8);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;$('scene').appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.target.set(0,1.2,0);controls.enableDamping=true;controls.minDistance=3;controls.maxDistance=18;controls.maxPolarAngle=Math.PI*.49;
+scene.add(new THREE.HemisphereLight(0xffffff,0x8b96a3,1.1));const key=new THREE.DirectionalLight(0xffffff,1.5);key.position.set(4,7,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);scene.add(key);const fill=new THREE.PointLight(0xfff5e8,.7,15);fill.position.set(-2,3,2);scene.add(fill);
+const room=new THREE.Group();scene.add(room);let floorMesh,backWall,leftWall,rightWall,ceiling;const loader=new THREE.TextureLoader();
+const meshes={};
+function makeMat(color=0xf0f0ee){return new THREE.MeshStandardMaterial({color,roughness:.9})}
+function matFor(tex,scale=1){tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=renderer.capabilities.getMaxAnisotropy();tex.repeat.set(Math.max(.2,scale),Math.max(.2,scale));return new THREE.MeshStandardMaterial({map:tex,roughness:.65,metalness:0})}
+function makeGridTexture(base='rgba(255,255,255,0)'){const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');ctx.fillStyle=base;ctx.fillRect(0,0,256,256);ctx.strokeStyle='rgba(55,55,55,.20)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,255);ctx.lineTo(255,255);ctx.moveTo(255,0);ctx.lineTo(255,255);ctx.stroke();return new THREE.CanvasTexture(c)}
+const groutTex=makeGridTexture();
+function makeRoom(){while(room.children.length)room.remove(room.children[0]);const w=+$('rw').value,d=+$('rd').value,h=+$('rh').value;const wall=makeMat(),floorMat=makeMat(0xd7d0c8);
+  floorMesh=new THREE.Mesh(new THREE.PlaneGeometry(w,d),floorMat);floorMesh.rotation.x=-Math.PI/2;floorMesh.receiveShadow=true;floorMesh.userData.surface='floor';room.add(floorMesh);
+  backWall=new THREE.Mesh(new THREE.PlaneGeometry(w,h),wall.clone());backWall.position.set(0,h/2,-d/2);backWall.receiveShadow=true;backWall.userData.surface='back';room.add(backWall);
+  leftWall=new THREE.Mesh(new THREE.PlaneGeometry(d,h),wall.clone());leftWall.rotation.y=Math.PI/2;leftWall.position.set(-w/2,h/2,0);leftWall.receiveShadow=true;leftWall.userData.surface='left';room.add(leftWall);
+  rightWall=new THREE.Mesh(new THREE.PlaneGeometry(d,h),wall.clone());rightWall.rotation.y=-Math.PI/2;rightWall.position.set(w/2,h/2,0);rightWall.receiveShadow=true;rightWall.userData.surface='right';room.add(rightWall);
+  ceiling=new THREE.Mesh(new THREE.PlaneGeometry(w,d),makeMat(0xfafafa));ceiling.rotation.x=Math.PI/2;ceiling.position.y=h;room.add(ceiling);
+  const baseMat=makeMat(0xeeeeee);for(const [x,z,rot,len] of [[0,-d/2,0,w],[-w/2,0,Math.PI/2,d],[w/2,0,Math.PI/2,d]]){const b=new THREE.Mesh(new THREE.BoxGeometry(len,.08,.06),baseMat);b.position.set(x,.04,z);if(rot)b.rotation.y=rot;room.add(b)}
+  applySelections();updateSurfaceUI();
 }
-let products=[], selectedWall=null, selectedFloor=null;
-
-// Ürün görselleri localStorage yerine IndexedDB'de saklanır.
-// Böylece yüksek çözünürlüklü JPEG'lerde tarayıcı depolama sınırına takılmaz.
-const DB_NAME='gural-sanal-oda-db-v1';
-const DB_STORE='products';
-
-function openProductDB(){
-  return new Promise((resolve,reject)=>{
-    const req=indexedDB.open(DB_NAME,1);
-    req.onupgradeneeded=()=>{ if(!req.result.objectStoreNames.contains(DB_STORE)) req.result.createObjectStore(DB_STORE,{keyPath:'id'}); };
-    req.onsuccess=()=>resolve(req.result);
-    req.onerror=()=>reject(req.error);
-  });
-}
-async function dbGetAll(){
-  const db=await openProductDB();
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readonly'), store=tx.objectStore(DB_STORE), req=store.getAll();
-    req.onsuccess=()=>resolve(req.result||[]);
-    req.onerror=()=>reject(req.error);
-  });
-}
-async function dbPut(item){
-  const db=await openProductDB();
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readwrite');
-    tx.objectStore(DB_STORE).put(item);
-    tx.oncomplete=()=>resolve();
-    tx.onerror=()=>reject(tx.error);
-  });
-}
-async function dbClear(){
-  const db=await openProductDB();
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readwrite');
-    tx.objectStore(DB_STORE).clear();
-    tx.oncomplete=()=>resolve();
-    tx.onerror=()=>reject(tx.error);
-  });
-}
-function fileToProduct(file){
-  return {id:crypto.randomUUID(),name:file.name.replace(/\.[^.]+$/,''),blob:file};
-}
-function dataUrlToBlob(dataUrl){
-  const parts=dataUrl.split(',');
-  const mime=(parts[0].match(/:(.*?);/)||[])[1]||'image/jpeg';
-  const bin=atob(parts[1]);
-  const bytes=new Uint8Array(bin.length);
-  for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
-  return new Blob([bytes],{type:mime});
-}
-async function loadProducts(){
-  try{
-    const saved=await dbGetAll();
-    products=saved.map(x=>({...x,url:URL.createObjectURL(x.blob)}));
-  }catch(e){
-    console.error('Ürün veritabanı okunamadı:',e);
-    products=[];
-  }
-}
-
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0xe7edf3);
-const camera=new THREE.PerspectiveCamera(45,1,.1,100);
-camera.position.set(7,5,8);
-const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.shadowMap.enabled=true;
-renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.05;
-$('scene').appendChild(renderer.domElement);
-
-const controls=new OrbitControls(camera,renderer.domElement);
-controls.target.set(0,1.2,0);controls.enableDamping=true;controls.minDistance=3;controls.maxDistance=18;
-controls.maxPolarAngle=Math.PI*.49;
-
-scene.add(new THREE.HemisphereLight(0xffffff,0x8b96a3,1.1));
-const key=new THREE.DirectionalLight(0xffffff,1.5);key.position.set(4,7,5);key.castShadow=true;key.shadow.mapSize.set(2048,2048);scene.add(key);
-const fill=new THREE.PointLight(0xfff5e8,.7,15);fill.position.set(-2,3,2);scene.add(fill);
-
-const room=new THREE.Group();scene.add(room);
-let floorMesh, backWall, leftWall, rightWall, ceiling;
-const loader=new THREE.TextureLoader();
-
-function matFor(tex,scale=1){
-  if(!tex)return new THREE.MeshStandardMaterial({color:0xdfe3e7,roughness:.9});
-  tex.colorSpace=THREE.SRGBColorSpace;tex.wrapS=tex.wrapT=THREE.RepeatWrapping;
-  tex.anisotropy=renderer.capabilities.getMaxAnisotropy();
-  tex.repeat.set(Math.max(.2,scale),Math.max(.2,scale));
-  return new THREE.MeshStandardMaterial({map:tex,roughness:.65,metalness:0});
-}
-function makeRoom(){
-  while(room.children.length)room.remove(room.children[0]);
-  const w=+$('rw').value,d=+$('rd').value,h=+$('rh').value;
-  const wall=new THREE.MeshStandardMaterial({color:0xf0f0ee,roughness:1});
-  const floorMat=new THREE.MeshStandardMaterial({color:0xd7d0c8,roughness:.9});
-  floorMesh=new THREE.Mesh(new THREE.PlaneGeometry(w,d),floorMat);floorMesh.rotation.x=-Math.PI/2;floorMesh.receiveShadow=true;room.add(floorMesh);
-  backWall=new THREE.Mesh(new THREE.PlaneGeometry(w,h),wall);backWall.position.set(0,h/2,-d/2);backWall.receiveShadow=true;room.add(backWall);
-  leftWall=new THREE.Mesh(new THREE.PlaneGeometry(d,h),wall);leftWall.rotation.y=Math.PI/2;leftWall.position.set(-w/2,h/2,0);leftWall.receiveShadow=true;room.add(leftWall);
-  rightWall=new THREE.Mesh(new THREE.PlaneGeometry(d,h),wall);rightWall.rotation.y=-Math.PI/2;rightWall.position.set(w/2,h/2,0);rightWall.receiveShadow=true;room.add(rightWall);
-  ceiling=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshStandardMaterial({color:0xfafafa,roughness:1}));
-  ceiling.rotation.x=Math.PI/2;ceiling.position.y=h;room.add(ceiling);
-  // Baseboards
-  const baseMat=new THREE.MeshStandardMaterial({color:0xeeeeee,roughness:.8});
-  for(const [x,z,rot,len] of [[0,-d/2,.0,w],[-w/2,0,Math.PI/2,d],[w/2,0,Math.PI/2,d]]){
-    const b=new THREE.Mesh(new THREE.BoxGeometry(len,.08,.06),baseMat);b.position.set(x,.04,z);if(rot)b.rotation.y=rot;room.add(b);
-  }
-  applySelections();
-}
-function applyTexture(mesh,data,scale){
-  if(!mesh||!data)return;
-  loader.load(data.url,tex=>{mesh.material=matFor(tex,scale);mesh.material.needsUpdate=true;});
-}
-function applySelections(){
-  const s=+$('scale').value;
-  if(selectedFloor)applyTexture(floorMesh,selectedFloor,s);
-  if(selectedWall){
-    applyTexture(backWall,selectedWall,s);
-    applyTexture(leftWall,selectedWall,s);
-    applyTexture(rightWall,selectedWall,s);
-  }
-  updateStatus();
-}
-function updateStatus(){
-  $('status').textContent=`Duvar: ${selectedWall?.name||'—'} · Zemin: ${selectedFloor?.name||'—'}`;
-}
-function fit(){
-  const r=$('scene').getBoundingClientRect();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height);
-}
-window.addEventListener('resize',fit);fit();
-
-function renderTiles(){
-  const q=$('search').value.toLocaleLowerCase('tr-TR').trim(), mode=$('mode').value;
-  $('tiles').innerHTML='';
-  products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(q)).forEach(p=>{
-    const d=document.createElement('div');d.className='tile '+((mode==='wall'?selectedWall:selectedFloor)?.id===p.id?'sel':'');
-    d.innerHTML=`<img src="${p.url}"><b>${p.name}</b><small>${mode==='wall'?'Duvara uygula':'Zemine uygula'}</small>`;
-    d.onclick=()=>{if(mode==='wall')selectedWall=p;else selectedFloor=p;applySelections();renderTiles()};
-    $('tiles').appendChild(d);
-  });
-}
-async function saveProducts(){
-  const files=[...$('files').files];
-  if(!files.length){
-    $('count').textContent='Önce bir veya daha fazla seramik görseli seçin.';
-    return;
-  }
-  const btn=$('saveBtn');
-  btn.disabled=true;
-  btn.textContent='Kaydediliyor...';
-  try{
-    for(const file of files){
-      if(!file.type.startsWith('image/')) continue;
-      const item=fileToProduct(file);
-      await dbPut(item);
-      products.push({...item,url:URL.createObjectURL(item.blob)});
-    }
-    updateCount();
-    renderTiles();
-    $('count').innerHTML=`<b>${products.length}</b> ürün görseli kayıtlı. Bu tarayıcıda saklanıyor ✓`;
-  }catch(e){
-    console.error(e);
-    $('count').innerHTML='<b>Yükleme başarısız.</b> Tarayıcı depolamasına erişilemedi.';
-  }finally{
-    btn.disabled=false;
-    btn.textContent='Ürünleri Kaydet';
-  }
-}
-function updateCount(){$('count').innerHTML=`<b>${products.length}</b> ürün görseli kayıtlı. Bu tarayıcıda saklanıyor ✓`;}
-$('saveBtn').onclick=saveProducts;
-$('clearBtn').onclick=async()=>{
-  if(confirm('Kayıtlı ürün görselleri silinsin mi?')){
-    products.forEach(p=>{if(p.url)URL.revokeObjectURL(p.url)});
-    products=[];selectedWall=selectedFloor=null;
-    try{await dbClear()}catch(e){console.error(e)}
-    updateCount();renderTiles();makeRoom();
-  }
-};
-$('search').oninput=renderTiles;$('mode').onchange=renderTiles;
-['rw','rd','rh'].forEach(id=>$(id).onchange=makeRoom);
-$('scale').oninput=applySelections;
-$('light').oninput=e=>{key.intensity=+e.target.value;fill.intensity=+e.target.value*.45};
-$('reset').onclick=()=>{camera.position.set(7,5,8);controls.target.set(0,1.2,0);controls.update()};
-$('front').onclick=()=>{camera.position.set(0,2.1,9);controls.target.set(0,1.3,0);controls.update()};
-$('top').onclick=()=>{camera.position.set(0,9,.01);controls.target.set(0,0,0);controls.update()};
-
-(async()=>{
-  await loadProducts();
-  updateCount();
-  makeRoom();
-  renderTiles();
-})();
+function applyTexture(mesh,data,scale){if(!mesh||!data)return;loader.load(data.url,tex=>{mesh.material=matFor(tex,scale);mesh.material.needsUpdate=true;updateGrout(mesh)})}
+function updateGrout(mesh){if(!mesh?.material)return;const show=$('showGrid').checked;if(mesh.material.map){mesh.material.alphaTest=0;const old=mesh.material.map;const grout=show?groutTex.clone():null;if(grout){grout.wrapS=grout.wrapT=THREE.RepeatWrapping;grout.repeat.copy(old.repeat);grout.offset.copy(old.offset);const gmat=new THREE.MeshStandardMaterial({map:old,roughness:.65});gmat.bumpMap=grout;gmat.bumpScale=.035;mesh.material=gmat}}}
+function applySelections(){const s=+$('scale').value;if(selectedFloor)applyTexture(floorMesh,selectedFloor,s);if(selectedWall){if(selectedSurface==='allWalls'){[backWall,leftWall,rightWall].forEach(m=>applyTexture(m,selectedWall,s))}else{const map={back:backWall,left:leftWall,right:rightWall};applyTexture(map[selectedSurface],selectedWall,s)}}updateStatus()}
+function updateStatus(){$('status').textContent=`Duvar: ${selectedWall?.name||'—'} · Zemin: ${selectedFloor?.name||'—'}`}
+function surfaceName(s){return s==='allWalls'?'Tüm duvarlar':s==='back'?'Arka duvar':s==='left'?'Sol duvar':s==='right'?'Sağ duvar':'Zemin'}
+function updateSurfaceUI(){$('surfacePill').textContent=surfaceName(selectedSurface);$('surfaceHint').textContent=activeMode==='wall'?`Duvar modu · ${surfaceName(selectedSurface)} seçili. Ürün kartına tıklayın.`:'Zemin modu · ürün kartına tıklayın.';highlightSurface()}
+function highlightSurface(){[backWall,leftWall,rightWall,floorMesh].forEach(m=>{if(!m?.material)return;m.material.emissive=new THREE.Color(0x000000);m.material.emissiveIntensity=0});if(surfaceMesh?.material){surfaceMesh.material.emissive=new THREE.Color(0x9b1a20);surfaceMesh.material.emissiveIntensity=.08}}
+function fit(){const r=$('scene').getBoundingClientRect();camera.aspect=r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height)}window.addEventListener('resize',fit);fit();
+let activeMode='wall';function setMode(mode){activeMode=mode;selectedSurface=mode==='wall'?'allWalls':'floor';$('wallMode').classList.toggle('active',mode==='wall');$('floorMode').classList.toggle('active',mode==='floor');$('modePill').textContent=mode==='wall'?'Duvar modu':'Zemin modu';renderTiles();updateSurfaceUI()}
+function renderTiles(){const q=$('search').value.toLocaleLowerCase('tr-TR').trim();const list=products.filter(p=>p.name.toLocaleLowerCase('tr-TR').includes(q));$('tiles').innerHTML='';$('resultCount').textContent=`${list.length} ürün`;if(!list.length){$('tiles').innerHTML='<div class="empty">Henüz eşleşen ürün yok.</div>';return}list.forEach(p=>{const chosen=(activeMode==='wall'?selectedWall:selectedFloor)?.id===p.id;const d=document.createElement('div');d.className='tile '+(chosen?'sel':'');d.innerHTML=`<img loading="lazy"><b></b><small>${activeMode==='wall'?'Duvara uygula':'Zemine uygula'}</small>`;d.querySelector('img').src=p.url;d.querySelector('b').textContent=p.name;d.onclick=()=>{if(activeMode==='wall'){selectedWall=p}else selectedFloor=p;applySelections();renderTiles();updateSurfaceUI()};$('tiles').appendChild(d)})}
+async function saveProducts(){const files=[...$('files').files];if(!files.length){$('count').textContent='Önce bir veya daha fazla seramik görseli seçin.';return}const btn=$('saveBtn');btn.disabled=true;btn.textContent='Kaydediliyor...';try{for(const file of files){if(!file.type.startsWith('image/'))continue;const item=fileToProduct(file);await dbPut(item);products.push({...item,url:URL.createObjectURL(item.blob)})}updateCount();renderTiles();$('files').value=''}catch(e){console.error(e);$('count').innerHTML='<b>Yükleme başarısız.</b> Tarayıcı depolamasına erişilemedi.'}finally{btn.disabled=false;btn.textContent='Ürünleri Kaydet'}}
+function updateCount(){$('count').innerHTML=`<b>${products.length}</b> ürün görseli kayıtlı. Bu tarayıcıda saklanıyor ✓`}
+$('saveBtn').onclick=saveProducts;$('clearBtn').onclick=async()=>{if(confirm('Kayıtlı ürün görselleri silinsin mi?')){products.forEach(p=>p.url&&URL.revokeObjectURL(p.url));products=[];selectedWall=selectedFloor=null;await dbClear();updateCount();renderTiles();makeRoom()}};
+$('wallMode').onclick=()=>setMode('wall');$('floorMode').onclick=()=>setMode('floor');$('search').oninput=renderTiles;['rw','rd','rh'].forEach(id=>$(id).onchange=makeRoom);$('scale').oninput=applySelections;$('showGrid').onchange=applySelections;$('light').oninput=e=>{key.intensity=+e.target.value;fill.intensity=+e.target.value*.45};
+$('reset').onclick=()=>{camera.position.set(7,5,8);controls.target.set(0,1.2,0);controls.update()};$('front').onclick=()=>{camera.position.set(0,2.1,9);controls.target.set(0,1.3,0);controls.update()};$('top').onclick=()=>{camera.position.set(0,9,.01);controls.target.set(0,0,0);controls.update()};
+const raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2();renderer.domElement.addEventListener('pointerdown',e=>{if(e.button!==0||activeMode!=='wall')return;const rect=renderer.domElement.getBoundingClientRect();mouse.x=((e.clientX-rect.left)/rect.width)*2-1;mouse.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(mouse,camera);const hits=raycaster.intersectObjects([backWall,leftWall,rightWall],false);if(!hits.length)return;surfaceMesh=hits[0].object;selectedSurface=surfaceMesh.userData.surface;updateSurfaceUI()});
+(async()=>{try{products=(await dbGetAll()).map(x=>({...x,url:URL.createObjectURL(x.blob)}))}catch(e){console.error(e);products=[]}$('count').innerHTML=`<b>${products.length}</b> ürün görseli kayıtlı. Bu tarayıcıda saklanıyor ✓`;makeRoom();setMode('wall');renderTiles()})();
 function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
 </script>
-</body>
-</html>
+</body></html>
